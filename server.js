@@ -8,22 +8,20 @@ app.use(express.json());
 
 app.use(
   cors({
-    origin: "http://localhost:4200", // URL do Angular
+    origin: "http://localhost:4200", 
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials: false,
   })
 );
 
-// Conectar ao MongoDB Atlas
+
 mongoose
   .connect(process.env.MONGODB_URI, { dbName: "todo" })
   .then(() => console.log("Conectado ao MongoDB"))
   .catch((err) => console.log("Erro na conexão:", err.message));
 
-// ----------------------
-// 📌 Modelo Task
-// ----------------------
+
 const taskSchema = new mongoose.Schema(
   {
     titulo: { type: String, required: true, trim: true, minlength: 2 },
@@ -36,14 +34,10 @@ const taskSchema = new mongoose.Schema(
 
 const Task = mongoose.model("Task", taskSchema, "tasks");
 
-// ----------------------
-// 📌 Rota inicial
-// ----------------------
+
 app.get("/", (req, res) => res.json({ msg: "API ToDo rodando" }));
 
-// ----------------------
-// 📌 Criar tarefa  
-// ----------------------
+
 app.post("/tasks", async (req, res) => {
   try {
     const task = await Task.create(req.body);
@@ -53,17 +47,12 @@ app.post("/tasks", async (req, res) => {
   }
 });
 
-// ----------------------
-// 📌 Listar tarefas
-// ----------------------
 app.get("/tasks", async (_, res) => {
   const tasks = await Task.find().sort({ createdAt: -1 });
   res.json(tasks);
 });
 
-// ----------------------
-// 📌 Buscar tarefa por ID
-// ----------------------
+
 app.get("/tasks/:id", async (req, res) => {
   try {
     if (!mongoose.isValidObjectId(req.params.id)) {
@@ -79,9 +68,7 @@ app.get("/tasks/:id", async (req, res) => {
   }
 });
 
-// ----------------------
-// 📌 Atualizar tarefa (PUT – substitui tudo)
-// ----------------------
+
 app.put("/tasks/:id", async (req, res) => {
   try {
     if (!mongoose.isValidObjectId(req.params.id)) {
@@ -102,9 +89,7 @@ app.put("/tasks/:id", async (req, res) => {
   }
 });
 
-// ----------------------
-// 📌 Editar parcialmente (PATCH)
-// ----------------------
+
 app.patch("/tasks/:id", async (req, res) => {
   try {
     if (!mongoose.isValidObjectId(req.params.id)) {
@@ -125,9 +110,7 @@ app.patch("/tasks/:id", async (req, res) => {
   }
 });
 
-// ----------------------
-// 📌 Deletar tarefa
-// ----------------------
+
 app.delete("/tasks/:id", async (req, res) => {
   try {
     if (!mongoose.isValidObjectId(req.params.id)) {
@@ -143,9 +126,7 @@ app.delete("/tasks/:id", async (req, res) => {
   }
 });
 
-// ----------------------
-// 📌 Iniciar servidor
-// ----------------------
+
 app.listen(process.env.PORT, () =>
   console.log(`Servidor rodando em http://localhost:${process.env.PORT}`)
 );
